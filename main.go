@@ -4,28 +4,54 @@ import (
 	"bytes"
 	"fmt"
 	twilio "github.com/carlosdp/twiliogo"
+	"io"
+	"io/ioutil"
+	"log"
 	"math/rand"
+	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"time"
 )
 
+var (
+	client       twilio.Client
+	twilioNumber string
+)
+
 func main() {
+	port := os.Getenv("PORT")
+	twilioNumber = os.Getenv("TWILIO_NUMBER")
 	sid := os.Getenv("twilio_sid")
 	auth_token := os.Getenv("twilio_auth")
-	client := twilio.NewClient(sid, auth_token)
 
+	client = twilio.NewClient(sid, auth_token)
+
+	http.HandleFunc("/twilio", handleRequestHand)
+
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func parseTwiloResponse(body io.Reader) url.Values {
+	queryStringBytes, _ := ioutil.ReadAll(body)
+	queryString := string(queryStringBytes)
+	values, err := url.ParseQuery(queryString)
+	if err != nil {
+		log.Println(err)
+	}
+	return values
+}
+
+func handleRequestHand(w http.ResponseWriter, r *http.Request) {
 	hand := NewHand()
 
-	fmt.Println(hand)
-	msg, err := twilio.NewMessage(client, "2019890712", "2534863751", twilio.Body(hand))
-
-	if err != nil {
+	if _, err := w.Write([]byte(hand)); err != nil {
+		w.Write(err)
 		fmt.Println(err)
-	} else {
-		fmt.Println(msg.Status)
 	}
-
 }
 
 func NewHand() string {

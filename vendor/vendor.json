@@ -1,0 +1,7 @@
+{
+    "rootPath": "github.com/zaquestion/krypto-server",
+    "heroku": {
+        "install" : [ "./..." ],
+        "goVersion": "go1.6"
+         }
+}
