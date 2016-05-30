@@ -49,7 +49,6 @@ func handleRequestHand(w http.ResponseWriter, r *http.Request) {
 	hand := NewHand()
 
 	if _, err := w.Write([]byte(hand)); err != nil {
-		w.Write(err)
 		fmt.Println(err)
 	}
 }
