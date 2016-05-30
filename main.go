@@ -87,7 +87,7 @@ func NewHand() string {
 		index := rand.Intn(len(deck))
 		card := strconv.Itoa(deck[index])
 		hand.WriteString(card)
-		hand.WriteString(" ")
+		hand.WriteString(", ")
 		deck = append(deck[:index], deck[index+1:]...)
 
 		if i == 2 {
