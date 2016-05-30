@@ -90,7 +90,7 @@ func NewHand() string {
 		hand.WriteString(" ")
 		deck = append(deck[:index], deck[index+1:]...)
 
-		if i == 1 {
+		if i == 2 {
 			offset = len(hand.String())
 		}
 	}
