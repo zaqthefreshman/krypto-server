@@ -12,7 +12,6 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	twilio "github.com/carlosdp/twiliogo"
@@ -41,10 +40,8 @@ func main() {
 
 func handleWeb(w http.ResponseWriter, r *http.Request) {
 	hand := NewHand()
-	fmtedHand, offset := fmtRow(hand.Row)
-	nbspaces := strings.Replace(fmtTarget(offset), " ", "&nbsp", -1)
+	fmtedHand, _ := fmtRow(hand.Row)
 
-	// Render template
 	t, err := template.ParseFiles("./static/hand.html")
 	if err != nil {
 		fmt.Println(err)
@@ -57,7 +54,7 @@ func handleWeb(w http.ResponseWriter, r *http.Request) {
 		Target string
 	}{
 		fmtedHand,
-		nbspaces + string(hand.Target),
+		strconv.Itoa(hand.Target),
 	}
 	t.Execute(w, respHand)
 }
@@ -92,16 +89,14 @@ func fmtRow(row []int) (string, int) {
 	for i, card := range row {
 		hand.WriteString(strconv.Itoa(card))
 
-		if i != 5 {
+		if i != 4 {
 			hand.WriteString(", ")
 		}
 
-		if i == 2 {
+		if i == 1 {
 			offset = len(hand.String())
 		}
 	}
-
-	hand.WriteString("\r\n")
 
 	return hand.String(), offset
 }
@@ -145,20 +140,23 @@ func NewHand() Hand {
 	rand.Seed(int64(time.Now().Nanosecond()))
 
 	var hand Hand
-	for i := 0; i < 6; i++ {
+	for i := 0; i < 5; i++ {
 		index := rand.Intn(len(deck))
 		card := deck[index]
 
 		// Remove card from deck
 		deck = append(deck[:index], deck[index+1:]...)
 
-		if i == 6 {
-			hand.Target = card
-			break
-		}
-
 		hand.Row = append(hand.Row, card)
 	}
+
+	index := rand.Intn(len(deck))
+	card := deck[index]
+
+	// Remove card from deck
+	deck = append(deck[:index], deck[index+1:]...)
+
+	hand.Target = card
 
 	return hand
 }
