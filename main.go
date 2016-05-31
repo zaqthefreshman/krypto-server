@@ -73,7 +73,7 @@ func handleTwilio(w http.ResponseWriter, r *http.Request) {
 	hand := NewHand()
 	fmtedHand, offset := fmtRow(hand.Row)
 
-	if _, err := w.Write([]byte(fmtedHand + fmtTarget(offset) + strconv.Itoa(hand.Target))); err != nil {
+	if _, err := w.Write([]byte(fmtedHand + "\r\n" + fmtTarget(offset) + strconv.Itoa(hand.Target))); err != nil {
 		fmt.Println(err)
 	}
 }
